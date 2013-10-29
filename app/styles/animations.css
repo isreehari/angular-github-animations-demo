@@ -33,6 +33,11 @@
   box-sizing:border-box;
 }
 
+.repo-listing.ng-enter-stagger {
+  -webkit-animation-delay:0.2s;
+  animation-delay:0.2s;
+} 
+
 .repo-listing.ng-enter {
   -webkit-animation:0.5s repeat_in;
   animation:0.5s repeat_in;
