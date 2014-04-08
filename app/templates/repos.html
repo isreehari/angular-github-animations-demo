@@ -1,21 +1,30 @@
-<a href="#!/repo/{{ repo.owner.login }}/{{ repo.name }}" ng-repeat="repo in repos" class="row repo-listing">
-  <div class="col-md-1 repo-index">
-    <img ng-src="{{ repo.owner.avatar_url }}" class="repo-avatar" />
-  </div>
-  <div class="col-md-11 repo-details">
-    <div class="row">
-      <div class="col-md-8">
+<section class="content">
+  <main class="main-content">
+    <div ng-include="'/templates/search.html'"></div>
+    <a href="#!/repo/{{ repo.owner.login }}/{{ repo.name }}" ng-repeat="repo in repos" class="row repo-listing">
+      <div class="repo-cell repo-image">
+        <img ng-src="{{ repo.owner.avatar_url }}" class="repo-avatar" />
+      </div>
+      <div class="repo-cell repo-details">
         <h2>{{ repo.full_name }}</h2>
         <strong>{{ repo.html_url }}</strong>
       </div>
-      <div class="col-md-2 repo-status-count">
+      <div class="repo-cell repo-status-count">
         <strong class="count">{{ repo.watchers_count }}</strong>
         Watchers
       </div>
-      <div class="col-md-2 repo-status-count">
+      <div class="repo-cell repo-status-count">
         <strong class="count">{{ repo.forks_count }}</strong>
         Forks
       </div>
+    </a>
+  </main>
+  <aside class="side-content">
+    <div class="row collab-nav">
+      <input type="search" ng-model="search" class="search-input" placeholder="Search Users..." />
     </div>
-  </div>
-</a>
+    <div class="user-avatars">
+      <img ng-repeat="user in users | filter:search" ng-src="{{ user.avatar_url }}" title="{{ user.login }}" class="user-avatar blocks" />
+    </div>
+  </aside>
+</section>

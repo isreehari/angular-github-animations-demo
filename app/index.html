@@ -7,29 +7,23 @@
 
   <body>
     <div id="wrapper">
-      <div ng-controller="HistoryCtrl" id="history">
-        <div class="container">
-          <a href="#!/" class="history-home-item">Home</a> |
-          <a href="#!/repo/{{ item.full_name }}" ng-repeat="item in history.list() | itemHistory" class="history-item">{{ item.full_name }}</a>
+      <nav id="header">
+        <div class="container navigation">
+          <h1 id="logo">Github-AngularJS</h1>
+          <a class="nav-item" href="#!/">Home</a>
+          <a class="nav-item" href="#!/gists">Gists</a>
+          <button ng-if="false" ng-click="toggleAnimations()" class="disable-button">
+            <span ng-show="animationsDisabled">Enable</span>
+            <span ng-hide="animationsDisabled">Disable</span>
+            Animations
+          </button>
         </div>
-      </div>
-      <div ng-controller="StatusCtrl">
-        <div ng-if="rateExceeded">
-          You have exceeded your GH download rate
-        </div>
-      </div>
-      <header id="header" ng-controller="SearchCtrl">
-        <div class="container">
-          <input id="searcher" ng-change="search(q)" ng-model="q" ng-class="{search:isSearch}" placeholder="Search for anything on Github" />
-        </div>
-      </header> 
+      </nav>
       <main id="body" ng-controller="StageCtrl">
         <div ng-show="loadingRoute" class="loading-frame">
           <i class="fa fa-spinner fa-spin loading-icon"></i>   
         </div>
-        <div class="container">
-          <div ng-view class="view-item"></div>
-        </div>
+        <div ng-view class="view-item"></div>
       </main>
     </div>
     <script src="./assets/app.js"></script>

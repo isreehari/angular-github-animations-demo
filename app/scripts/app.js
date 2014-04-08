@@ -2,13 +2,32 @@ angular.module('myApp', ['ngAnimate', 'ngRoute', 'app.homePages','app.ghAPI','ap
 
   .constant('TPL_PATH', '/templates')
 
-  .config(function($routeProvider, $locationProvider, TPL_PATH) {
+  .config(function($routeProvider, $locationProvider, $sceProvider, TPL_PATH) {
+    $sceProvider.enabled(false);
     $locationProvider.hashPrefix('!');
     $routeProvider
       .when('/',{
         controller : 'ReposCtrl',
         templateUrl : TPL_PATH + '/repos.html',
-        reloadOnSearch : false
+        reloadOnSearch : false,
+        resolve : {
+          users : function(ghUsers) {
+            return ghUsers();
+          },
+          repos : function(ghRepos) {
+            return ghRepos('angular');
+          }
+        }
+      })
+      .when('/gists',{
+        controller : 'GistsCtrl',
+        templateUrl : TPL_PATH + '/gists.html',
+        reloadOnSearch : false,
+        resolve : {
+          gists : function(ghGists) {
+            return ghGists();
+          }
+        }
       })
       .when('/repo/:owner/:repo',{
         controller : 'RepoCtrl',
@@ -23,37 +42,13 @@ angular.module('myApp', ['ngAnimate', 'ngRoute', 'app.homePages','app.ghAPI','ap
       })
   })
 
-  .run(function($rootScope, itemHistory) {
-    $rootScope.history = itemHistory;
-  })
-
-  .factory('itemHistory', function() {
-    var items = [];
-    return {
-      push : function(item) {
-        var newItems = [];
-        for(var i=0;i<items.length;i++) {
-          if(items[i].id == item.id) {
-            continue;
-          }
-          newItems.push(items[i]);
-        }
-        items = newItems;
-        items.push(item);
-      },
-      list : function() {
-        return items;
-      }
-    }
-  })
-
-  .filter('itemHistory', function() {
-    return function(data) {
-      var items = [];
-      for(var i=data.length-1, j = 0; i >= 0 && j < 10; i--, j++) {
-        items.push(data[i]);
-      }
-      return items;
+  .run(function($rootScope, $animate) {
+    $rootScope.animationsDisabled = false;
+    $rootScope.toggleAnimations = function() {
+      $rootScope.animationsDisabled = $animate.enabled();
+      $animate.enabled()
+          ? $animate.enabled(false)
+          : $animate.enabled(true);
     }
   })
 
@@ -66,9 +61,17 @@ angular.module('myApp', ['ngAnimate', 'ngRoute', 'app.homePages','app.ghAPI','ap
     });
   })
 
-  .controller('StageCtrl', function($scope, $rootScope) {
-    $rootScope.$on('$routeChangeStart', function() {
+  .controller('StageCtrl', function($scope, $rootScope, $anchorScroll) {
+    $rootScope.$on('loadingStart', function() {
+      $anchorScroll();
       $scope.loadingRoute = true;
+    });
+    $rootScope.$on('$routeChangeStart', function() {
+      $anchorScroll();
+      $scope.loadingRoute = true;
+    });
+    $rootScope.$on('loadingEnd', function() {
+      $scope.loadingRoute = false;
     });
     $rootScope.$on('$routeChangeSuccess', function() {
       $scope.loadingRoute = false;
@@ -102,9 +105,7 @@ angular.module('myApp', ['ngAnimate', 'ngRoute', 'app.homePages','app.ghAPI','ap
     }
   })
 
-  .controller('RepoCtrl', function($scope, $rootScope, repoData, itemHistory, ghRepoCollaborators, ghRepoCommits, ghRepoReadme, ghRepoPullRequests, ghRepoIssues) {
-    itemHistory.push(repoData);
-
+  .controller('RepoCtrl', function($scope, $rootScope, repoData, ghRepoCollaborators, ghRepoCommits, ghRepoReadme, ghRepoPullRequests, ghRepoIssues) {
     $scope.repo = repoData;
 
     $rootScope.$broadcast('titleChange', repoData.full_name);
@@ -146,46 +147,122 @@ angular.module('myApp', ['ngAnimate', 'ngRoute', 'app.homePages','app.ghAPI','ap
     }
   })
 
-  .directive('subNavComponent', function($location, $anchorScroll, parameterize, TPL_PATH) {
+  .directive('panel', ['$animate', function($animate) {
     return {
-      scope : {
-        indexTemplate : '@subNavIndexTemplate'
-      },
-      controller : function($scope) {
-        var hash = $location.hash();
-        if(!hash || hash.length == 0) {
-          $location.hash('index');
-        }
+      restrict : 'E',
+      link : function($scope, element) {
+        var trigger = element.find('[panel-trigger]');
+        var content = element.find('[panel-content]');
+        var clicked = false;
+        trigger.on('click', function() {
+          clicked =! clicked;
+          clicked
+              ? $animate.addClass(content, 'hidden')
+              : $animate.removeClass(content, 'hidden');
+        });
+      }
+    }
+  }])
 
-        $scope.$watch(
-          function() { return $location.hash(); },
-          function(page) {
-            var template = page == 'index' ?
-              $scope.indexTemplate :
-              page;
-            $scope.selected = page;
-            $scope.template = TPL_PATH + '/' + parameterize(template) + '.html';
-            $anchorScroll();
+  .controller('GistsCtrl', function($scope, gists) {
+    $scope.gists = gists;
+  })
+
+  .filter('prettify', function($window, $sce) {
+    return function(code) {
+      var html = $window.prettyPrintOne(code);
+      return $sce.trustAsHtml(html);
+    }
+  })
+
+  .controller('GistListCtrl', function($scope, ghGist, $rootScope) {
+    var activeGist;
+    $scope.setActiveGist = function(gistRecord) {
+      $rootScope.$broadcast('loadingStart');
+      ghGist(gistRecord.id).then(function(gist) {
+        $rootScope.$broadcast('loadingEnd');
+        activeGist = gist;
+      });
+    };
+    $scope.getActiveGist = function() {
+      return activeGist;
+    };
+  })
+
+  .value('firstValue', function(collection) {
+    if(angular.isArray(collection)) {
+      return collection[0];
+    } else {
+      for(var i in collection) {
+        return collection[i];
+      }
+    }
+  })
+
+  .controller('GistCtrl', function($scope, firstValue) {
+    $scope.item = $scope.getActiveGist();
+    $scope.activeFile = firstValue($scope.item.files);
+    $scope.setActiveFile = function(file) {
+      $scope.activeFile = file;
+    };
+    $scope.getActiveFile = function() {
+      return $scope.activeFile;
+    }
+  })
+
+  .directive('appCarousel', function($animate) {
+    return {
+      priority: 1000,
+      terminal : true,
+      transclude: 'element',
+      compile : function($element, attrs) {
+        var expr = attrs.appCarousel;
+        return function(scope, $element, attrs, ctrl, transFn) {
+          var activeElement, activeScope;
+          scope.$watch(expr, function(newItem, oldItem) {
+            var newScope = scope.$new();
+            newScope.item = newItem;
+
+            transFn(newScope, function(clone) {
+              if(activeScope) {
+                activeScope.$destroy();
+              } 
+              activeScope = newScope;
+
+              if(activeElement) {
+                $animate.leave(activeElement);
+              }
+              activeElement = clone;
+
+              $animate.enter(clone, null, $element);
+            });
           });
+        }
       }
     };
   })
 
-  .controller('HistoryCtrl', function($scope) {
-  })
+  .controller('ReposCtrl', function($scope, $rootScope, $location, ghRepos, $routeParams, users, repos) {
 
-  .controller('ReposCtrl', function($scope, $rootScope, $location, ghRepos, $routeParams) {
+    $scope.users = users;
+    $scope.repos = repos; 
+
     $scope.searchRepos = function(q) {
       $scope.repos = [];
+      $rootScope.$broadcast('loadingStart');
       ghRepos(q).then(function(items) {
         $scope.repos = items;
+        $rootScope.$broadcast('loadingEnd');
       });
     };
 
+    var i = 0, formerSearch;
     $scope.$watch(
       function() { return $location.search().q; },
-      function(q) {
-        $scope.searchRepos(q || 'angular');
+      function(q,v) {
+        if(i++ == 0 || formerSearch == q) return;
+        formerSearch = q || formerSearch;
+        $scope.searchRepos(formerSearch);
         $rootScope.$broadcast('titleChange', q, true);
       });
   });

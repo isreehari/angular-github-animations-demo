@@ -1,66 +1,56 @@
-<div class="row">
-  <div class="col-md-7" sub-nav-component sub-nav-index-template="repo-readme">
-    <nav class="sub-nav">
-      <a href="#!/{{ $parent.repoUrl('#index') }}" class="btn btn-default" ng-class="{'btn-primary':selected=='index'}">
-        README
-      </a>
-      <a href="#!/{{ $parent.repoUrl('#commits') }}" class="btn btn-default" ng-class="{'btn-primary':selected=='commits'}">
-        Commits
-      </a>
-      <a href="#!/{{ $parent.repoUrl('#pull-requests') }}" class="btn btn-default" ng-class="{'btn-primary':selected=='pull-requests'}">
-        Pull Requests
-      </a>
-      <a href="#!/{{ $parent.repoUrl('#issues') }}" class="btn btn-default" ng-class="{'btn-primary':selected=='issues'}">
-        Issues
-      </a>
-      <input type="search" ng-model="q" class="sub-nav-search search-input" placeholder="search" ng-show="selected!='index'" />
-    </nav>
-
-    <div ng-switch="selected" class="slide-container">
-      <div ng-switch-when="index" class="slide">
+<section class="content">
+  <main class="main-content">
+    <panel>
+      <h3 panel-trigger>About / README</h3>
+      <div panel-content>
         <pre>
-          {{ $parent.$parent.readme }}
+          {{ readme }}
         </pre>
       </div>
+    </panel>
 
-      <div ng-switch-when="commits" class="slide">
-        <div ng-repeat="com in $parent.$parent.commits | filter:q" class="commit-item listing-item">
+    <panel>
+      <h3 panel-trigger>Commits</h3>
+      <div panel-content>
+        <div ng-repeat="com in commits | filter:q" class="commit-item listing-item">
           <h4>{{ com.commit.message }}</h4>
           <p>{{ com.sha }}</p>
         </div>
       </div>
+    </panel>
 
-      <div ng-switch-default class="slide">
-        <div ng-repeat="item in $parent.$parent.issuesOrPullRequests(selected) | filter:q track by item.id" class="listing-item">
+    <panel>
+      <h3 panel-trigger>Issues / Pull-Requests</h3>
+      <div panel-content>
+        <div ng-repeat="item in issuesOrPullRequests(selected) | filter:q track by item.id" class="listing-item">
           <h4>{{ item.title }}</h4>
           <p>{{ item.user.login }}</p>
         </div>
       </div>
-    </div> 
-  </div>
-
-  <div class="col-md-5">
-    <div class="repo-status row panel">
-      <div class="col-md-4 repo-status-count">
+    </panel>
+  </main>
+  <aside class="side-content">
+    <div class="repo-status">
+      <div ng-controller="CollaboratorsCtrl" class="panel">
+        <div class="row collab-nav">
+          <input type="search" ng-model="q" class="col-md-12 search-input" placeholder="Search Collabs..."/>
+        </div>
+        <div class="collab-avatars">
+          <img ng-repeat="collab in collaborators" ng-src="{{ collab.avatar_url }}" title="{{ collab.login }}" class="collab-avatar" ng-class="getClass(collab, q)" />
+        </div>
+      </div>
+      <div class="repo-status-count">
         <strong class="count">{{ repo.watchers_count }}</strong>
         Watchers
       </div>
-      <div class="col-md-4 repo-status-count">
+      <div class="repo-status-count">
         <strong class="count">{{ repo.open_issues_count }}</strong>
         Open Issues
       </div>
-      <div class="col-md-4 repo-status-count">
+      <div class="repo-status-count">
         <strong class="count">{{ repo.forks_count }}</strong>
         Forks
       </div>
     </div>
-    <div ng-controller="CollaboratorsCtrl" class="panel">
-      <div class="row collab-nav">
-        <input type="search" ng-model="q" class="col-md-12 search-input" />
-      </div>
-      <div ng-repeat="collab in collaborators" class="user-avatar-list-item">
-        <img ng-src="{{ collab.avatar_url }}" title="{{ collab.login }}" class="user-avatar" ng-class="getClass(collab, q)" />
-      </div>
-    </div>
-  </div>
-</div>
+  </aside>
+</section>

@@ -1,0 +1,24 @@
+<section class="content">
+  <main class="main-content" ng-controller="GistListCtrl">
+    <div ng-if="getActiveGist()" class="gist-frame reveal">
+      <div app-carousel="getActiveGist()" class="gist-example slide" ng-controller="GistCtrl">
+        <div class="gist-stage">
+          <pre class="gist-code" ng-bind-html="getActiveFile().content | prettify"></pre>
+        </div>
+        <div class="gist-files">
+          <a ng-class="{selected:getActiveFile().filename==file}" href="" ng-click="setActiveFile(data)" ng-repeat="(file, data) in item.files" class="gist-file">
+            {{ data.filename }}
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="gist-listings">
+      <div ng-repeat="gist in gists" class="gist-listing" ng-click="setActiveGist(gist)">
+        <h2>{{ gist.user.login }}</h2>
+        <div ng-repeat="(file, data) in gist.files">
+          <span class="fa fa-file"></span> {{ data.filename }}
+        </div>
+      </div>
+    </div>
+  </main>
+</section>

@@ -1,24 +1,12 @@
 angular.module('app.ghAPI', ['base64'])
 
-  .value('ghClientID', '0df626e36b8ff8454531')
-
-  .value('ghClientSecret', '8f7f06a64dec75a0ea7af574aedf104cd437db78')
-
   .value('ghHost', 'https://api.github.com/')
 
-  .factory('ghRequest', function($http, $rootScope, $q, ghHost, ghClientID, ghClientSecret) {
+  .factory('ghRequest', function($http, $rootScope, $q, ghHost) {
     return function(path) {
-      var suffix = (path.indexOf('?') > 0 ? '&' : '?') + 'callback=JSON_CALLBACK';
-      if((ghClientID && ghClientID.length > 0) &&
-         (ghClientSecret && ghClientSecret.length > 0)) {
-        suffix += '&client_id=' + ghClientID;
-        suffix += '&client_secret=' + ghClientSecret;
-      }
-
       var defer = $q.defer();
-      $http.jsonp(ghHost + path + suffix, { cache : true }).success(function(response) {
+      $http.get(ghHost + path, { cache : true, }).success(function(response) {
           if(/API rate limit exceeded/.test(response.message)) {
-            alert('asd');
             $rootScope.$broadcast('ghRateLimitExceeded');
             defer.reject();
           }
@@ -76,8 +64,26 @@ angular.module('app.ghAPI', ['base64'])
     };
   })
 
+  .factory('ghGists', function(ghRequest) {
+    return function(search) {
+      return ghRequest('gists/public?q=' + (search || ''));
+    };
+  })
+
+  .factory('ghGist', function(ghRequest) {
+    return function(id) {
+      return ghRequest('gists/' + id);
+    };
+  })
+
   .factory('ghRepoCollaborators', function(ghRequest) {
     return function(owner, repo) {
       return ghRequest('repos/' + owner + '/' + repo + '/collaborators');
+    };
+  })
+
+  .factory('ghUsers', function(ghRequest) {
+    return function(search) {
+      return ghRequest('users?q=' + (search || ''));
     };
   });

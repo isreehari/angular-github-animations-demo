@@ -84,10 +84,11 @@ module.exports = function(grunt) {
       styles: {
         dest: './app/assets/app.css',
         src: [
-          './bower_components/bootstrap/dist/css/bootstrap.css',
-          './bower_components/bootstrap/dist/css/bootstrap-theme.css',
           './bower_components/font-awesome/css/font-awesome.css',
+          'app/scripts/google-code-prettify/src/prettify.css',
+          'app/fonts/open-sans/css/open-sans.css',
           'app/styles/app.css',
+          'app/styles/animate.css',
           'app/styles/animations.css'
         ]
       },
@@ -98,11 +99,13 @@ module.exports = function(grunt) {
         dest: './app/assets/app.js',
         src: [
           'bower_components/jquery/jquery.js',
-          'lib/angular.js-3d4c80c/angular.js',
-          'lib/angular.js-3d4c80c/angular-route.js',
-          'lib/angular.js-3d4c80c/angular-animate.js',
+          'bower_components/angular/angular.js',
+          'bower_components/angular-route/angular-route.js',
+          'bower_components/angular-animate/angular-animate.js',
           'node_modules/base64codec/base64codec.js',
           'app/scripts/base64.js',
+          'app/scripts/google-code-prettify/src/prettify.js',
+          'app/scripts/TweenMax.min.js',
           'app/scripts/gh-api.js',
           'app/scripts/homePages.js',
           'app/scripts/animations.js',
