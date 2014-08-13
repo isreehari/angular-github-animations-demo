@@ -21,3 +21,85 @@
 .loading-frame {
   transition:0.5s linear all;
 }
+
+
+.repo-listing {
+  overflow-y:hidden;
+  box-sizing:border-box;
+  display:block;
+}
+
+.repo-listing.ng-enter {
+  -webkit-animation:0.5s repeat_in;
+  animation:0.5s repeat_in;
+}
+
+@keyframes repeat_in {
+  from { max-height:0px; }
+  to { max-height:150px; }
+}
+
+@-webkit-keyframes repeat_in {
+  from { max-height:0px; }
+  to { max-height:150px; }
+}
+
+.repo-listing.ng-leave {
+  -webkit-animation:0.5s repeat_out;
+  animation:0.5s repeat_out;
+}
+
+@keyframes repeat_out {
+  from { max-height:150px; }
+  to { max-height:0px; }
+}
+
+@-webkit-keyframes repeat_out {
+  from { max-height:150px; }
+  to { max-height:0px; }
+}
+
+
+
+
+
+
+.view-item.ng-enter {
+  transition:0.2s linear all;
+  transition-delay:0.2s;
+  position:relative;
+  z-index:100;
+  left:40px;
+  opacity:0;
+}
+
+.view-item.ng-enter.ng-enter-active {
+  left:0;
+  opacity:1;
+}
+
+.view-item.ng-leave {
+  transition:0.2s linear all;
+  transition:0.2s linear all;
+  left:0;
+  opacity:1;
+}
+
+.view-item.ng-leave.ng-leave-active {
+  left:-40px;
+  opacity:0;
+}
+
+.slide.ng-leave {
+  position:absolute;
+  -webkit-animation-name: rollOut;
+  animation-name: rollOut;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+}
+.slide.ng-enter {
+  -webkit-animation-name: rollIn;
+  animation-name: rollIn;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+}
