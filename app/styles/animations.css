@@ -63,31 +63,32 @@
 
 
 
+@media (min-width: 500px) {
+  .view-item.ng-enter {
+    transition:0.2s linear all;
+    transition-delay:0.2s;
+    position:relative;
+    z-index:100;
+    left:40px;
+    opacity:0;
+  }
 
-.view-item.ng-enter {
-  transition:0.2s linear all;
-  transition-delay:0.2s;
-  position:relative;
-  z-index:100;
-  left:40px;
-  opacity:0;
-}
+  .view-item.ng-enter.ng-enter-active {
+    left:0;
+    opacity:1;
+  }
 
-.view-item.ng-enter.ng-enter-active {
-  left:0;
-  opacity:1;
-}
+  .view-item.ng-leave {
+    transition:0.2s linear all;
+    transition:0.2s linear all;
+    left:0;
+    opacity:1;
+  }
 
-.view-item.ng-leave {
-  transition:0.2s linear all;
-  transition:0.2s linear all;
-  left:0;
-  opacity:1;
-}
-
-.view-item.ng-leave.ng-leave-active {
-  left:-40px;
-  opacity:0;
+  .view-item.ng-leave.ng-leave-active {
+    left:-40px;
+    opacity:0;
+  }
 }
 
 .slide.ng-leave {
@@ -102,4 +103,31 @@
   animation-name: rollIn;
   -webkit-animation-duration: 1s;
   animation-duration: 1s;
+}
+
+.blocks.ng-enter {
+  opacity:0;
+  transition:0.2s linear all;
+  -webkit-transform:translateY(-50px);
+}
+
+.blocks.ng-enter.ng-enter-active {
+  opacity:1;
+  -webkit-transform:translateY(0);
+}
+
+.blocks.ng-leave {
+  opacity:1;
+  transition:0.2s linear all;
+  -webkit-transform:translateY(0);
+}
+
+.blocks.ng-leave.ng-leave-active {
+  opacity:0;
+  -webkit-transform:translateY(-50px);
+}
+
+.blocks.ng-enter-stagger, .blocks.ng-leave-stagger {
+  transition-duration:0;
+  transition-delay:0.05s;
 }

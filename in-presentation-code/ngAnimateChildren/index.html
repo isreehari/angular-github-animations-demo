@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang='en' ng-app="TestApp">
+<head>
+<title></title>
+<style>
+.view-container {
+  position:relative;
+}
+.view-container [ng-view] {
+  position:absolute;
+  transition:0.5s linear all;
+  background:white;
+  min-height:2000px;
+  width:100%;
+}
+.view-container [ng-view].ng-enter {
+  z-index:1000;
+  left:100%;
+}
+.view-container [ng-view].ng-enter.ng-enter-active {
+  left:0;
+}
+.item, .stagger {
+  transition:0.5s linear all;
+}
+.stagger {
+  padding:20px;
+  background:#eee;
+  font-size:20px;
+}
+.item {
+  width:150px;
+  height:150px;
+  background:red;
+  display:inline-block;
+  margin:10px;
+}
+.stagger.ng-enter-stagger,
+.item.ng-leave-stagger,
+.item.ng-enter-stagger {
+  transition-delay:0.1s;
+  transition-duration:0;
+}
+.stagger.ng-enter-stagger {
+  transition-delay:0.2s;
+  transition-duration:0;
+}
+.item.ng-enter {
+  opacity:0;
+}
+.item.ng-enter.ng-enter-active {
+  opacity:1;
+}
+.item.ng-leave {
+  opacity:1;
+}
+.item.ng-leave.ng-leave-active {
+  opacity:0;
+}
+.stagger.ng-enter {
+  opacity:0;
+}
+.stagger.ng-enter.ng-enter-active {
+  opacity:1;
+}
+.stagger.ng-leave {
+  opacity:1;
+}
+.stagger.ng-leave.ng-leave-active {
+  opacity:0;
+}
+</style>
+</head>
+<body ng-animate-children>
+
+  <a href="#/">Page 1</a>
+  <a href="#/view2">Page 2</a>
+  <div class="view-container">
+    <div ng-view></div>
+  </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type='text/javascript' src="./angular.js"></script>
+<script type='text/javascript' src="./angular-route.js"></script>
+<script type='text/javascript' src="./angular-animate.js"></script>
+<script type='text/javascript'>
+angular.module('TestApp', ['ngRoute', 'ngAnimate'])
+  .config(function($routeProvider) {
+    $routeProvider.when('/', {
+      controller : 'View1Ctrl',
+      templateUrl : './view1.html'
+    });
+    $routeProvider.when('/view2', {
+      controller : 'View2Ctrl',
+      templateUrl : './view2.html'
+    });
+  })
+  .controller('View1Ctrl', function($scope) {
+    $scope.items = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+  })
+  .controller('View2Ctrl', function($scope) {
+  });
+</script>
+</body>
+</html>

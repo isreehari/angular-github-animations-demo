@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+<style>
+nav > a {
+  display:inline-block;
+  padding:20px;
+  font-size:20px;
+  background:#ddd;
+  color:black;
+}
+:target {
+  background:red;
+  color:white;
+  transition:1s linear all;
+}
+</style>
+</head>
+<body>
+
+  <nav>
+    <a id="one" href="#one">one</a>
+    <a id="two" href="#two">two</a>
+    <a id="three" href="#three">three</a>
+    <a id="four" href="#four">four</a>
+    <a id="five" href="#five">five</a>
+  </nav>
+  
+</body>
+<script src="https://code.jquery.com/jquery-git2.js"></script>
+<script src="https://code.jquery.com/color/jquery.color-git.js"></script>
+<script>
+$(function() {
+  $('nav a').on('transitionend', function() {
+    alert('a');
+  });
+});
+</script>
+</html>

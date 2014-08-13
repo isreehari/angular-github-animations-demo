@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+<style>
+nav a {
+  font-size:20px;
+  display:inline-block;
+  padding:10px;
+}
+</style>
+</head>
+<body>
+
+  <nav>
+    <a id="one" href="#one">one</a>
+    <a id="two" href="#two">two</a>
+    <a id="three" href="#three">three</a>
+    <a id="four" href="#four">four</a>
+    <a id="five" href="#five">five</a>
+  </nav>
+
+</body>
+<script src="https://code.jquery.com/jquery-git2.js"></script>
+<script src="https://code.jquery.com/color/jquery.color-git.js"></script>
+<script>
+$(function() {
+
+  window.onhashchange = function() {
+    activateElement(window.location.hash.substr(1));
+  };
+
+  activateElement('');
+
+  function activateElement(id) {
+    //call animate on each element
+    $('#' + id).animate({
+      backgroundColor : '#FF0000',
+      color: '#FFFFFF'
+    });
+
+    $('nav a[id!="' + id + '"]').animate({
+      backgroundColor : '#000000',
+      color: '#000000'
+    });
+  }
+});
+</script>
+</html>
