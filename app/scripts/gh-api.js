@@ -2,16 +2,17 @@ angular.module('app.ghAPI', ['base64'])
 
   .value('ghHost', 'https://api.github.com/')
 
-  .factory('ghRequest', function($http, $rootScope, $q, ghHost) {
+  .value('ghAuth', 'client_id=5961502ff7bf2539d7c4&client_secret=8211921cd136eac55f209b1c09ae7ae0708bef21')
+
+  .factory('ghRequest', function($http, $rootScope, $q, ghHost, ghAuth) {
     return function(path) {
       var defer = $q.defer();
-      $http.get(ghHost + path, { cache : true, }).success(function(response) {
-          if(/API rate limit exceeded/.test(response.message)) {
+      var q = path.indexOf('?') == -1 ? '?' : '&';
+      $http.get(ghHost + path + q + ghAuth, { cache : true, }).success(function(response) {
+          if (/API rate limit exceeded/.test(response.message)) {
             $rootScope.$broadcast('ghRateLimitExceeded');
             defer.reject();
-          }
-          else {
-            $rootScope.$broadcast('ghRequestSuccess');
+          } else {
             defer.resolve(response.data ? response.data : response);
           }
         }, function() {

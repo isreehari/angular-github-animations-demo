@@ -152,6 +152,8 @@ h3 {
 .collab-avatars .collab-avatar {
   max-width:90px;
   min-width:50px;
+  max-height:90px;
+  min-height:50px;
 }
 .collab-avatar {
   transition:0.5s linear all;
